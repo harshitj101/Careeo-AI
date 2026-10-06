@@ -7,7 +7,7 @@ const tokenBlacklistModel = require("../model/blacklist.model")
  * 
  * @name registerUserController
  * @description  Register as a new user, expects username, email and password in the request body
- * @access Public
+ * @access public
  */
 
 async function registerUserController(req, res) {
@@ -61,7 +61,7 @@ async function registerUserController(req, res) {
 /**
  * @name loginUserController
  * @description login a user, expects email and password in the request body
- * @access Public
+ * @access public
  */
 
 async function loginUserController(req, res) {
@@ -104,11 +104,11 @@ async function loginUserController(req, res) {
 /**
  * @name loginUserController
  * @description logout a user by adding the cookie in blacklist and clear it 
- * @access Public
+ * @access public
  */
 
 async function logoutUserController(req, res){
-    const token = req.cookie.token
+    const token = req.cookies.token
 
     if(token){
         await tokenBlacklistModel.create({ token })
@@ -121,8 +121,29 @@ async function logoutUserController(req, res){
     })
 }
 
+/**
+ * @name getMeController
+ * @description get the current logged in user details.
+ * @access private
+ */
+
+async function getMeController(req, res){
+
+    const user = await userModel.findById(req.user.id)
+
+    res.status(200).json({
+        message: "user details fetched successfully",
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+    })
+}
+
 module.exports = {
     registerUserController,
     loginUserController,
-    logoutUserController
+    logoutUserController,
+    getMeController
 }
